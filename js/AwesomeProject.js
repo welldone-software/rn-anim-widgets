@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
     StyleSheet,
     Text,
+    ScrollView,
     View,
     Animated,
     Easing
@@ -12,33 +13,64 @@ import ipsumArray from './ipsumArray'
 
 
 export default class AwesomeProject extends Component {
-    constructor( props ) {
+    constructor(props) {
         super(props);
-        this.state = { data: ipsumArray.map(text => ({ text: text, expanded: false })) }
+        this.state = {
+            data: ipsumArray.map(text => ({
+                anim: new Animated.Value(0),
+                text: text,
+                expanded: false
+            }))
+        }
     }
 
-    change( item ) {
+    change(item) {
         return () => {
             var prevExpanded = item.expanded;
             this.state.data.forEach(item => item.expanded = false)
             item.expanded = !prevExpanded;
+
+            Animated.spring(item.anim, {
+                toValue: 0,   // Returns to the start
+                velocity: 3,  // Velocity makes it move
+                tension: -2, // Slow
+                friction: 1,  // Oscillate a lot
+            }).start();
+            this.setState({ hiddenContent: false })
+
             this.setState({ data: this.state.data })
         }
     }
 
-    static hiddenItem( item ) {
-        if ( item.expanded ) {
+    static hiddenItem(item) {
             return (
-                <Text style={{ color: '#fff' }}>
+                <Text style={{ color: '#fff',
+                    transform: [ {
+                        skewX: item.anim.interpolate({
+                            inputRange: [ 0, 1 ],
+                            outputRange: [ '0deg', '180deg' ],
+                        })
+                    } ]
+
+                }}>
+                    {item.text}
+                    {item.text}
+                    {item.text}
+                    {item.text}
+                    {item.text}
+                    {item.text} {item.text}
+                    {item.text}
+                    {item.text}
+                    {item.text}
+                    {item.text}
                     {item.text}
                 </Text>
             )
-        }
     }
 
     render() {
         return (
-            <View style={styles.container}>
+            <ScrollView >
                 {this.state.data.map(item => (
                     <View style={styles.container}>
                         <SkewlableView item={item} onPress={this.change(item)}>
@@ -47,7 +79,7 @@ export default class AwesomeProject extends Component {
                         {AwesomeProject.hiddenItem(item)}
                     </View>
                 ))}
-            </View>
+            </ScrollView>
         );
     }
 }
