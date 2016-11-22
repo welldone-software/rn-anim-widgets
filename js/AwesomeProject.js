@@ -7,28 +7,46 @@ import {
     Easing
 } from 'react-native';
 
-import FadeInView from './FadeInView'
-import NativeCircularActionMenuWrapper from './NativeCircularActionMenuWrapper'
+import SkewlableView from './SkewlableView'
+import ipsumArray from './ipsumArray'
 
 
 export default class AwesomeProject extends Component {
+    constructor( props ) {
+        super(props);
+        this.state = { data: ipsumArray.map(text => ({ text: text, expanded: false })) }
+    }
+
+    change( item ) {
+        return () => {
+            var prevExpanded = item.expanded;
+            this.state.data.forEach(item => item.expanded = false)
+            item.expanded = !prevExpanded;
+            this.setState({ data: this.state.data })
+        }
+    }
+
+    static hiddenItem( item ) {
+        if ( item.expanded ) {
+            return (
+                <Text style={{ color: '#fff' }}>
+                    {item.text}
+                </Text>
+            )
+        }
+    }
+
     render() {
         return (
             <View style={styles.container}>
-                <NativeCircularActionMenuWrapper/>
-                <FadeInView>
-                    <Text style={styles.welcome}>
-                        Welcome to React Native!
-                    </Text>
-
-                    <Text style={styles.instructions}>
-                        To get started, edit index.android.js
-                    </Text>
-                    <Text style={styles.instructions}>
-                        Double tap R on your keyboard to reload,{'\n'}
-                        Shake or press menu button for dev menu
-                    </Text>
-                </FadeInView>
+                {this.state.data.map(item => (
+                    <View style={styles.container}>
+                        <SkewlableView item={item} onPress={this.change(item)}>
+                            <Text style={styles.mainBlocks}>{item.text}</Text>
+                        </SkewlableView>
+                        {AwesomeProject.hiddenItem(item)}
+                    </View>
+                ))}
             </View>
         );
     }
@@ -37,18 +55,14 @@ export default class AwesomeProject extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        alignSelf: 'stretch',
+        backgroundColor: '#000'
     },
-    welcome: {
-        fontSize: 20,
+    mainBlocks: {
+        fontSize: 15,
         textAlign: 'center',
-        margin: 10,
-    },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-    },
+        color: '#000'
+    }
 });
