@@ -12,7 +12,6 @@ export default class FadeInView extends React.Component {
         super(props);
         this.skewX = new Animated.Value(0);
         this.initExpanted = this.props.expanded
-        this.isScrolling = this.props.isScrolling
     }
 
     render() {
@@ -26,16 +25,6 @@ export default class FadeInView extends React.Component {
             }).start();
         }
 
-        if (this.isScrolling !== this.props.isScrolling) {
-            this.isScrolling = this.props.isScrolling
-            if (!this.initExpanted) {
-                Animated.timing(this.skewX, {
-                        duration: this.props.isScrolling ? 600 : 150,
-                        toValue: this.props.isScrolling ? 0.15 : 0,
-                        easing: Easing.in(Easing.elastic(2))
-                }).start();
-            }
-        }
         return (
             <Animated.View style={{
                 flex: 1,
