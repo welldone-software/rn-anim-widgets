@@ -1,29 +1,41 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
     Animated,
     Easing,
+    View,
     Text
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default class FadeInView extends React.Component {
-    constructor( props ) {
+    constructor(props) {
         super(props);
-        this.state = { hiddenContent: true }
-        this.anim = new Animated.Value(0);
-    }
-
-    click() {
-        this.props.onPress()
-        Animated.spring(this.anim, {
-            toValue: 0,   // Returns to the start
-            velocity: 3,  // Velocity makes it move
-            tension: -2, // Slow
-            friction: 1,  // Oscillate a lot
-        }).start();
-        this.setState({ hiddenContent: false })
+        this.skewX = new Animated.Value(0);
+        this.initExpanted = this.props.expanded
+        this.isScrolling = this.props.isScrolling
     }
 
     render() {
+        if (this.initExpanted !== this.props.expanded) {
+            this.initExpanted = this.props.expanded
+            Animated.spring(this.skewX, {
+                toValue: this.props.expanded ? 0.15 : 0,   // Returns to the start
+                velocity: 3,  // Velocity makes it move
+                tension: -2, // Slow
+                friction: 5,  // Oscillate a lot
+            }).start();
+        }
+
+        if (this.isScrolling !== this.props.isScrolling) {
+            this.isScrolling = this.props.isScrolling
+            if (!this.initExpanted) {
+                Animated.timing(this.skewX, {
+                        duration: this.props.isScrolling ? 600 : 150,
+                        toValue: this.props.isScrolling ? 0.15 : 0,
+                        easing: Easing.in(Easing.elastic(2))
+                }).start();
+            }
+        }
         return (
             <Animated.View style={{
                 flex: 1,
@@ -32,20 +44,21 @@ export default class FadeInView extends React.Component {
                 marginBottom: 1,
                 marginLeft: 1,
                 marginRight: 1,
-                padding: 15,
+                paddingLeft: 5,
+                paddingRight: 10,
                 flexDirection: 'row',
                 backgroundColor: '#fff',
                 alignSelf: 'stretch',
-                transform: [ {
-                    skewX: this.anim.interpolate({
-                        inputRange: [ 0, 1 ],
-                        outputRange: [ '0deg', '180deg' ],
+                transform: [{
+                    skewX: this.skewX.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ['0deg', '180deg'],
                     })
-                } ]
+                }]
             }}>
                 {this.props.children}
-                <Text style={{ color: '#000', backgroundColor: '#ccc', height: 80 }} onPress={this.click.bind(this)}>
-                      >
+                <Text onPress={this.props.onPress}>
+                    <Icon name={this.props.expanded ? 'chevron-up' : 'chevron-down'} size={10}/>
                 </Text>
             </Animated.View>
         );

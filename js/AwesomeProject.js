@@ -10,15 +10,16 @@ import {
 
 import SkewlableView from './SkewlableView'
 import ipsumArray from './ipsumArray'
-
+import ExpandableView from './ExpandableView'
 
 export default class AwesomeProject extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: ipsumArray.map(text => ({
-                anim: new Animated.Value(0),
-                text: text,
+            isScrolling: false,
+            data: ipsumArray.map(item => ({
+                time: item.time,
+                location: item.location,
                 expanded: false
             }))
         }
@@ -26,57 +27,42 @@ export default class AwesomeProject extends Component {
 
     change(item) {
         return () => {
-            var prevExpanded = item.expanded;
-            this.state.data.forEach(item => item.expanded = false)
-            item.expanded = !prevExpanded;
-
-            Animated.spring(item.anim, {
-                toValue: 0,   // Returns to the start
-                velocity: 3,  // Velocity makes it move
-                tension: -2, // Slow
-                friction: 1,  // Oscillate a lot
-            }).start();
-            this.setState({ hiddenContent: false })
-
+            var willBeExpanded = !item.expanded;
+            if (willBeExpanded) {
+                this.state.data.forEach(item => item.expanded = false)
+            }
+            item.expanded = willBeExpanded;
             this.setState({ data: this.state.data })
         }
     }
 
-    static hiddenItem(item) {
-            return (
-                <Text style={{ color: '#fff',
-                    transform: [ {
-                        skewX: item.anim.interpolate({
-                            inputRange: [ 0, 1 ],
-                            outputRange: [ '0deg', '180deg' ],
-                        })
-                    } ]
+    onScroll = ()=> {
+        this.setState({ isScrolling: true })
+    }
 
-                }}>
-                    {item.text}
-                    {item.text}
-                    {item.text}
-                    {item.text}
-                    {item.text}
-                    {item.text} {item.text}
-                    {item.text}
-                    {item.text}
-                    {item.text}
-                    {item.text}
-                    {item.text}
-                </Text>
-            )
+    onUnScroll = () => {
+        this.setState({ isScrolling: false })
     }
 
     render() {
         return (
-            <ScrollView >
+            <ScrollView onScrollBeginDrag={this.onScroll} showsHorizontalScrollIndicator={false}
+                        onScrollEndDrag={this.onUnScroll}>
                 {this.state.data.map(item => (
                     <View style={styles.container}>
-                        <SkewlableView item={item} onPress={this.change(item)}>
-                            <Text style={styles.mainBlocks}>{item.text}</Text>
+                        <SkewlableView item={item} onPress={this.change(item)} expanded={item.expanded} isScrolling={this.state.isScrolling}>
+                            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={styles.time}>{item.time}</Text>
+                                <View>
+                                    <Text style={styles.headerText}>{item.location} {this.isScrolling + ''}</Text>
+                                    <Text style={styles.headerText}>Munich</Text>
+                                    <Text style={styles.headerText}>Something else</Text>
+                                </View>
+                            </View>
                         </SkewlableView>
-                        {AwesomeProject.hiddenItem(item)}
+                        <ExpandableView show={item.expanded}>
+                            <Text style={styles.contentText}>{item.time}</Text>
+                        </ExpandableView>
                     </View>
                 ))}
             </ScrollView>
@@ -92,9 +78,17 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         backgroundColor: '#000'
     },
-    mainBlocks: {
-        fontSize: 15,
-        textAlign: 'center',
+    time: {
+        fontSize: 60,
+        marginRight: 10,
         color: '#000'
+    },
+    headerText: {
+        fontSize: 15,
+        color: '#000'
+    },
+
+    contentText: {
+        color: '#fff'
     }
 });
