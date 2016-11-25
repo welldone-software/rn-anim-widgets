@@ -18,7 +18,7 @@ export default class FadeInView extends React.Component {
         if (this.initExpanted !== this.props.expanded) {
             this.initExpanted = this.props.expanded
             Animated.spring(this.skewX, {
-                toValue: this.props.expanded ? 0.15 : 0,   // Returns to the start
+                toValue: this.props.expanded ? 1 : 0,   // Returns to the start
                 velocity: 3,  // Velocity makes it move
                 tension: -2, // Slow
                 friction: 5,  // Oscillate a lot
@@ -30,19 +30,30 @@ export default class FadeInView extends React.Component {
                 flex: 1,
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: 1,
-                marginLeft: 1,
-                marginRight: 1,
                 paddingLeft: 5,
                 paddingRight: 10,
                 flexDirection: 'row',
                 backgroundColor: '#fff',
                 alignSelf: 'stretch',
+                marginLeft: this.skewX.interpolate({ inputRange: [0, 1], outputRange: [1, 4]}),
+                marginRight: this.skewX.interpolate({ inputRange: [0, 1], outputRange: [1, 4]}),
+                height: this.skewX.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [100, 90],
+                }),
+                marginBottom: this.skewX.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 6],
+                }),
+                marginTop: this.skewX.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 3],
+                }),
                 transform: [{
-                    skewX: this.skewX.interpolate({
+                    rotateX: this.skewX.interpolate({
                         inputRange: [0, 1],
-                        outputRange: ['0deg', '180deg'],
-                    })
+                        outputRange: ['0deg', '3deg'],
+                    }),
                 }]
             }}>
                 {this.props.children}
