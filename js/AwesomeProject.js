@@ -36,12 +36,32 @@ export default class AwesomeProject extends Component {
         }
     }
 
+    onScroll = ()=> {
+        this.setState({ isScrolling: true })
+    }
+
+    onUnScroll = () => {
+        this.setState({ isScrolling: false })
+    }
+
+    setPressed = (item) => {
+        return () => {
+            this.state.data.forEach(item => item.pressed = false)
+            item.pressed = true;
+            this.setState({ data: this.state.data })
+        }
+    }
+
     render() {
         return (
-            <ScrollView>
+            <ScrollView onScrollBeginDrag={this.onScroll} showsHorizontalScrollIndicator={false}
+                        onScrollEndDrag={this.onUnScroll}>
                 {this.state.data.map(item => (
                     <View style={styles.container}>
-                        <SkewlableView item={item} onPress={this.change(item)} expanded={item.expanded}>
+                        <SkewlableView item={item}
+                                       setPressed={this.setPressed(item)}
+                                       onPress={this.change(item)}
+                                       isScrolling={this.state.isScrolling}>
                             <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={styles.time}>{item.time}</Text>
                                 <View>

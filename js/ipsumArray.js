@@ -6,5 +6,11 @@ export default [
     {time: '21:00', location: 'Santa Cruz'},
     {time: '21:00', location: 'Santa Cruz'},
     {time: '21:00', location: 'Santa Cruz'},
+    {time: '21:00', location: 'Santa Cruz'},
+    {time: '21:00', location: 'Santa Cruz'},
+    {time: '21:00', location: 'Santa Cruz'},
+    {time: '21:00', location: 'Santa Cruz'},
+    {time: '21:00', location: 'Santa Cruz'},
+    {time: '21:00', location: 'Santa Cruz'},
     {time: '21:00', location: 'Santa Cruz'}
 ]
